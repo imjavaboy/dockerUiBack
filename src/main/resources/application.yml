@@ -1,0 +1,164 @@
+server:
+  port: 9999
+  ip: 127.0.0.1
+  addr: http://${server.ip}:${server.port}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: 123456789g
+
+  #===== Upload settings =====#
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+#mail
+  mail:
+    host: smtp.qq.com
+    protocol: smtp
+    username: 1159311344@qq.com
+    password: tcxzkhozsttefeej
+    default-encoding: UTF-8
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  #===== LogBack settings =====#
+  #Session中验证码相关key
+  output:
+    ansi:
+      enabled: detect
+
+# activeMq的配置
+  activemq:
+    in-memory: false
+    broker-url: tcp://8.140.125.78:61616
+    close-timeout: 500ms
+    send-timeout: 3000ms
+    pool:
+      max-connections: 100
+      idle-timeout: 30s
+# Mybatis-plus配置
+mybatis-plus:
+  #配置Mapper映射文件
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  # 配置MyBatis数据返回类型别名（默认别名是类名）
+  type-aliases-package: com.gbq.docker.uiproject.domain.entity
+  type-enums-package: com.gbq.docker.uiproject.domain.enums
+  #主键类型  0="数据库ID自增", 1="用户输入ID",2="全局唯一ID (数字类型唯一ID)", 3="全局唯一ID
+  #mybatis-plus.global-config.id-type= 1
+  #字段策略 0="忽略判断",1="非 NULL 判断"),2="非空判断"
+  global-config:
+    field-strategy: 1
+    #驼峰自动转换
+    db-column-underline: true
+    refresh-mapper: true
+  configuration:
+    # 自动驼峰命名
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+
+## Mybatis SQL 打印(方法接口所在的包，不是Mapper.xml所在的包)
+logging:
+  level:
+    com.gbq.docker.uiproject.mapper: debug
+#redis
+redis:
+  token:
+    #token在redis中key
+    key: sys_token
+    #token有效期，单位；小时
+    expire: 6
+  login:
+    #用户登录信息在redis中key
+    key: sys_login
+  role:
+    #用户角色在redis中key
+    key: sys_role
+  role-right:
+    #角色权限在redis中key
+    key: sys_role_right
+
+  project:
+    #用户项目在redis中key
+    key: sys_project
+    register:
+      emial:
+        #注册邮件token在redis中key
+        key: register_email
+        #注册邮件token的过期时间【单位s】:24小时
+        expire: 86400
+  local-image:
+    #本地镜像在redis中的key
+    key: sys_image
+  user-service:
+    #用户服务在redis中的key
+    key: user_service
+  volumes:
+    #数据卷在redis中key
+    key: sys_volumes
+  repository:
+    image:
+      #仓储镜像在redis中key
+      key: repository_image
+  container-name:
+    #容器名再redis中的key
+    key: container_name
+  monitor-actual:
+    prefix: monitor_actual
+
+  monitor-day:
+    #容器24小时监控在redis中key前缀
+    prefix: monitor_today
+  monitor-week:
+    #容器7日监控在redis中key前缀
+    prefix: monitor_week
+  standalone:
+    host: 127.0.0.1
+    port: 6379
+
+
+#===== Nginx settings =====#
+nginx:
+  server: http://8.140.125.78:80
+
+#docker配置
+# Docker 注册HUB地址
+docker:
+  registry:
+    url:  8.140.125.78:5000
+  server:
+    address: 8.140.125.78
+    port: 2375
+    url: http://${docker.server.address}:${docker.server.port}
+  swarm:
+    manager:
+      address: 8.140.125.78
+      port: 2375
+      url: http://${docker.swarm.manager.address}:${docker.swarm.manager.port}
+#服务器Socket通信端口
+file:
+  socket:
+    port:8899
+
+
+
+
+
+
+
+
+
+
+
+
+
+
