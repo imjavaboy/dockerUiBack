@@ -17,6 +17,7 @@ public enum ResultEnum {
     AUTHORITY_ERROR("鉴权错误", 10),
     PERMISSION_ERROR("权限错误", 11),
     PARAM_ERROR("参数错误", 12),
+
     NETWORK_ERROR("网络错误", 13),
     REQUEST_TIMEOUT("请求超时",14),
     REQUEST_ERROR("请求错误",15),
@@ -102,7 +103,8 @@ public enum ResultEnum {
     NOTICE_TYPE_ERROR("通知类型错误",112),
     NOTICE_RECEIVER_NOT_EMPTY("通知接收用户不能为空",113),
     NOTICE_READ_ERROR("读取通知错误",114),
-    NOTICE_CONTENT_LENGTH_THAN_65535("通知内容不能超过65535个字符", 115);
+    NOTICE_CONTENT_LENGTH_THAN_65535("通知内容不能超过65535个字符", 115),
+    FREEZE_USER_ERROR("至少选择一个冻结或解冻项",116);
 
     private String message;
     private int code;

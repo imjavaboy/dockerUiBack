@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.gbq.docker.uiproject.commons.util.HttpClientUtils;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,7 +81,7 @@ public class SysLog implements Serializable {
             params.append(("".equals(params.toString()) ? "" : "&") + param.getKey() + "=");
             String paramValue = (param.getValue() != null && param.getValue().length > 0 ? param.getValue()[0] : "");
             // 忽略密码参数
-//            params.append(HttpClientUtils.abbr(StringUtils.endsWithIgnoreCase(param.getKey(), "password") ? "" : paramValue, 100));
+            params.append(HttpClientUtils.abbr(StringUtils.endsWithIgnoreCase(param.getKey(), "password") ? "" : paramValue, 100));
         }
         this.param = params.toString();
     }

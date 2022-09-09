@@ -1,17 +1,20 @@
 package com.gbq.docker.uiproject.controller;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.gbq.docker.uiproject.commons.component.WrapperComponent;
 import com.gbq.docker.uiproject.commons.util.HttpClientUtils;
 import com.gbq.docker.uiproject.commons.util.ResultVOUtils;
 import com.gbq.docker.uiproject.domain.entity.SysLogin;
 import com.gbq.docker.uiproject.domain.enums.ResultEnum;
+import com.gbq.docker.uiproject.domain.select.UserSelect;
 import com.gbq.docker.uiproject.domain.vo.ResultVO;
 import com.gbq.docker.uiproject.service.JwtService;
 import com.gbq.docker.uiproject.service.SysLoginService;
-import com.github.xiaoymin.swaggerbootstrapui.io.ResourceUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,18 +35,23 @@ public class UserController {
     private SysLoginService sysLoginService;
     @Resource
     private JwtService jwtService;
+    @Resource
+    private WrapperComponent wrapperComponent;
 
 
-    @GetMapping("/getbyId")
-    public ResultVO getSelfInfo(String id){
-        SysLogin sysLogin = sysLoginService.getById(id);
-        return ResultVOUtils.success(sysLogin);
+
+    @ApiOperation("获取用户列表")
+    @GetMapping("/list")
+    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    public ResultVO getUserList(UserSelect userSelect, Page<SysLogin> page){
+        EntityWrapper<SysLogin> entityWrapper = wrapperComponent.genUserWrapper(userSelect);
+        Page<SysLogin> sysLoginPage = sysLoginService.selectPage(page, entityWrapper);
+        return ResultVOUtils.success(sysLoginPage);
     }
 
-//    @PostMapping("/freeze")
-//    @PreAuthorize("hasRole('ROLE_SYSTEM')")
-//    public ResultVO freezeUser(String)
 
+
+    @ApiOperation("退出登录")
     @GetMapping("/logout")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')")
     public ResultVO logout(@RequestAttribute String uid){
@@ -55,7 +63,31 @@ public class UserController {
             log.error("退出登录失败，错误位置：{}，错误栈：{}", "UserController.logout()", HttpClientUtils.getStackTraceAsString(e));
             return ResultVOUtils.error(ResultEnum.OTHER_ERROR);
         }
+    }
 
+    @ApiOperation("冻结用户")
+    @PostMapping("/freeze")
+    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    public ResultVO freezeUser(String[] ids) {
+        if(ids == null || ids.length == 0) {
+            return ResultVOUtils.error(ResultEnum.FREEZE_USER_ERROR);
+        }
+
+        int count = sysLoginService.freezeUser(ids);
+
+        return ResultVOUtils.success(count);
+    }
+
+    @PostMapping("/cancelFreeze")
+    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    public ResultVO cancelFreezeUser(String[] ids) {
+        if(ids == null || ids.length == 0) {
+            return ResultVOUtils.error(ResultEnum.FREEZE_USER_ERROR);
+        }
+
+        int count = sysLoginService.cancelFreezeUser(ids);
+
+        return ResultVOUtils.success(count);
     }
 
 }

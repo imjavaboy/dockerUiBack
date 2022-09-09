@@ -7,10 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -42,4 +39,15 @@ public class MonitorController {
     public ResultVO getSelfDockerInfo(@RequestAttribute String uid){
         return monitorService.getUserDockerInfo(uid);
     }
+
+
+    @ApiOperation("读取指定用户Docker信息")
+    @GetMapping("/{userId}/info")
+    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    public ResultVO getUserDockerInfo(@PathVariable String userId) {
+        return monitorService.getUserDockerInfo(userId);
+    }
+
+
+
 }

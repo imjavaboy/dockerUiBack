@@ -94,4 +94,29 @@ public interface SysLoginService extends IService<SysLogin> {
      * @return
      */
     void cleanLoginCache(SysLogin login);
+
+    /**
+     *  冻结用户
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    int freezeUser(String[] ids);
+
+
+    /**
+     *  更新用户信息
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    int update(SysLogin sysLogin);
+
+    /**
+     *  解冻用户
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    int cancelFreezeUser(String[] ids);
 }

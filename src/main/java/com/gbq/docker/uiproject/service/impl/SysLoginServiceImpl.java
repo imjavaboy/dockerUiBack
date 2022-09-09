@@ -12,10 +12,12 @@ import com.gbq.docker.uiproject.domain.entity.SysLog;
 import com.gbq.docker.uiproject.domain.entity.SysLogin;
 import com.gbq.docker.uiproject.domain.enums.ResultEnum;
 import com.gbq.docker.uiproject.domain.enums.RoleEnum;
+import com.gbq.docker.uiproject.domain.enums.SysLogTypeEnum;
 import com.gbq.docker.uiproject.domain.vo.ResultVO;
 import com.gbq.docker.uiproject.exception.CustomException;
 import com.gbq.docker.uiproject.exception.JsonException;
 import com.gbq.docker.uiproject.mapper.SysLoginMapper;
+import com.gbq.docker.uiproject.service.SysLogService;
 import com.gbq.docker.uiproject.service.SysLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -33,6 +35,7 @@ import javax.annotation.Resource;
 import javax.jms.Destination;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +78,10 @@ public class SysLoginServiceImpl extends ServiceImpl<SysLoginMapper,SysLogin> im
     private TemplateEngine templateEngine;
     @Resource
     private MQProducer mqProducer;
+    @Resource
+    private SysLogService sysLogService;
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public SysLogin getById(String id) {
@@ -337,5 +344,51 @@ public class SysLoginServiceImpl extends ServiceImpl<SysLoginMapper,SysLogin> im
         } catch (Exception e) {
             log.error("缓存删除异常，错误位置：SysLoginServiceImpl.cleanLoginCache()");
         }
+    }
+
+    @Override
+    public int freezeUser(String[] ids) {
+        int count = 0;
+        for(String id : ids) {
+            SysLogin login = getById(id);
+
+            if(login != null && !login.getHasFreeze() && login.getRoleId() == RoleEnum.ROLE_USER.getCode()) {
+                login.setHasFreeze(true);
+                // 更新数据
+                update(login);
+
+                count++;
+            }
+        }
+        // 写入日志
+        sysLogService.saveLog(request, SysLogTypeEnum.FREEZE_USER,null);
+
+        return count;
+    }
+
+    @Override
+    public int update(SysLogin sysLogin) {
+        Integer integer = loginMapper.updateById(sysLogin);
+        cleanLoginCache(sysLogin);
+        return integer;
+    }
+
+    @Override
+    public int cancelFreezeUser(String[] ids) {
+        int count = 0;
+        for(String id : ids) {
+            SysLogin login = getById(id);
+
+            if(login != null && login.getHasFreeze() && login.getRoleId() == RoleEnum.ROLE_USER.getCode()) {
+                login.setHasFreeze(false);
+                // 更新数据
+                update(login);
+                count++;
+            }
+        }
+        // 写入日志
+        sysLogService.saveLog(request, SysLogTypeEnum.CANCEL_FREEZE_USER,null);
+
+        return count;
     }
 }

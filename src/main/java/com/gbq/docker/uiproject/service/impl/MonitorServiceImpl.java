@@ -65,8 +65,8 @@ public class MonitorServiceImpl implements MonitorService {
         UserDockerInfoVO userDockerInfoVO = new UserDockerInfoVO();
         userDockerInfoVO.setContainerNum(userContainerMapper.countByUserId(uid,null));
         userDockerInfoVO.setContainerRunningNum(userContainerMapper.countByUserId(uid, ContainerStatusEnum.RUNNING.getCode()));
-        userDockerInfoVO.setContainerRunningNum(userContainerMapper.countByUserId(uid, ContainerStatusEnum.PAUSE.getCode()));
-        userDockerInfoVO.setContainerRunningNum(userContainerMapper.countByUserId(uid, ContainerStatusEnum.STOP.getCode()));
+        userDockerInfoVO.setContainerPauseNum(userContainerMapper.countByUserId(uid, ContainerStatusEnum.PAUSE.getCode()));
+        userDockerInfoVO.setContainerStopNum(userContainerMapper.countByUserId(uid, ContainerStatusEnum.STOP.getCode()));
         userDockerInfoVO.setHubImageNum(repositoryImageMapper.selectCount(new EntityWrapper<RepositoryImage>().eq("user_id",uid)));
          userDockerInfoVO.setProjectNum(userProjectMapper.selectCount(new EntityWrapper<UserProject>().eq("user_id", uid)));
          userDockerInfoVO.setUploadImageNum(sysImageService.selectCount(new EntityWrapper<SysImage>().eq("user_id", uid)));
