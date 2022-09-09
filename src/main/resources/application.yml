@@ -15,28 +15,33 @@ spring:
     multipart:
       max-request-size: 100MB
       max-file-size: 100MB
-#mail
+  #mail
   mail:
     host: smtp.qq.com
     protocol: smtp
     username: 1159311344@qq.com
-    password: tcxzkhozsttefeej
+    password: npwnyelwijvabadb
     default-encoding: UTF-8
     port: 465
     properties:
       mail:
+        transport:
+          protocol: smtp
         smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: ${spring.mail.port}
           auth: true
           starttls:
             enable: true
             required: true
   #===== LogBack settings =====#
-  #SessionÖĞÑéÖ¤ÂëÏà¹Økey
+  #Sessionä¸­éªŒè¯ç ç›¸å…³key
   output:
     ansi:
       enabled: detect
 
-# activeMqµÄÅäÖÃ
+  # activeMqçš„é…ç½®
   activemq:
     in-memory: false
     broker-url: tcp://8.140.125.78:61616
@@ -45,81 +50,85 @@ spring:
     pool:
       max-connections: 100
       idle-timeout: 30s
-# Mybatis-plusÅäÖÃ
+
+  jms:
+    template:
+      delivery-mode: persistent
+# Mybatis-plusé…ç½®
 mybatis-plus:
-  #ÅäÖÃMapperÓ³ÉäÎÄ¼ş
+  #é…ç½®Mapperæ˜ å°„æ–‡ä»¶
   mapper-locations: classpath*:/mapper/*Mapper.xml
-  # ÅäÖÃMyBatisÊı¾İ·µ»ØÀàĞÍ±ğÃû£¨Ä¬ÈÏ±ğÃûÊÇÀàÃû£©
+  # é…ç½®MyBatisæ•°æ®è¿”å›ç±»å‹åˆ«åï¼ˆé»˜è®¤åˆ«åæ˜¯ç±»åï¼‰
   type-aliases-package: com.gbq.docker.uiproject.domain.entity
   type-enums-package: com.gbq.docker.uiproject.domain.enums
-  #Ö÷¼üÀàĞÍ  0="Êı¾İ¿âID×ÔÔö", 1="ÓÃ»§ÊäÈëID",2="È«¾ÖÎ¨Ò»ID (Êı×ÖÀàĞÍÎ¨Ò»ID)", 3="È«¾ÖÎ¨Ò»ID
+  #ä¸»é”®ç±»å‹  0="æ•°æ®åº“IDè‡ªå¢", 1="ç”¨æˆ·è¾“å…¥ID",2="å…¨å±€å”¯ä¸€ID (æ•°å­—ç±»å‹å”¯ä¸€ID)", 3="å…¨å±€å”¯ä¸€ID
   #mybatis-plus.global-config.id-type= 1
-  #×Ö¶Î²ßÂÔ 0="ºöÂÔÅĞ¶Ï",1="·Ç NULL ÅĞ¶Ï"),2="·Ç¿ÕÅĞ¶Ï"
+  #å­—æ®µç­–ç•¥ 0="å¿½ç•¥åˆ¤æ–­",1="é NULL åˆ¤æ–­"),2="éç©ºåˆ¤æ–­"
   global-config:
     field-strategy: 1
-    #ÍÕ·å×Ô¶¯×ª»»
+    #é©¼å³°è‡ªåŠ¨è½¬æ¢
     db-column-underline: true
     refresh-mapper: true
   configuration:
-    # ×Ô¶¯ÍÕ·åÃüÃû
+    # è‡ªåŠ¨é©¼å³°å‘½å
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: false
 
-## Mybatis SQL ´òÓ¡(·½·¨½Ó¿ÚËùÔÚµÄ°ü£¬²»ÊÇMapper.xmlËùÔÚµÄ°ü)
+## Mybatis SQL æ‰“å°(æ–¹æ³•æ¥å£æ‰€åœ¨çš„åŒ…ï¼Œä¸æ˜¯Mapper.xmlæ‰€åœ¨çš„åŒ…)
 logging:
   level:
     com.gbq.docker.uiproject.mapper: debug
 #redis
 redis:
   token:
-    #tokenÔÚredisÖĞkey
+    #tokenåœ¨redisä¸­key
     key: sys_token
-    #tokenÓĞĞ§ÆÚ£¬µ¥Î»£»Ğ¡Ê±
+    #tokenæœ‰æ•ˆæœŸï¼Œå•ä½ï¼›å°æ—¶
     expire: 6
   login:
-    #ÓÃ»§µÇÂ¼ĞÅÏ¢ÔÚredisÖĞkey
+    #ç”¨æˆ·ç™»å½•ä¿¡æ¯åœ¨redisä¸­key
     key: sys_login
   role:
-    #ÓÃ»§½ÇÉ«ÔÚredisÖĞkey
+    #ç”¨æˆ·è§’è‰²åœ¨redisä¸­key
     key: sys_role
   role-right:
-    #½ÇÉ«È¨ÏŞÔÚredisÖĞkey
+    #è§’è‰²æƒé™åœ¨redisä¸­key
     key: sys_role_right
 
   project:
-    #ÓÃ»§ÏîÄ¿ÔÚredisÖĞkey
+    #ç”¨æˆ·é¡¹ç›®åœ¨redisä¸­key
     key: sys_project
-    register:
-      emial:
-        #×¢²áÓÊ¼ştokenÔÚredisÖĞkey
-        key: register_email
-        #×¢²áÓÊ¼ştokenµÄ¹ıÆÚÊ±¼ä¡¾µ¥Î»s¡¿:24Ğ¡Ê±
-        expire: 86400
+  register:
+    email:
+      #æ³¨å†Œé‚®ä»¶tokenåœ¨redisä¸­key
+      key: register_email
+      #æ³¨å†Œé‚®ä»¶tokençš„è¿‡æœŸæ—¶é—´ã€å•ä½sã€‘:24å°æ—¶
+      expire: 86400
   local-image:
-    #±¾µØ¾µÏñÔÚredisÖĞµÄkey
+    #æœ¬åœ°é•œåƒåœ¨redisä¸­çš„key
     key: sys_image
   user-service:
-    #ÓÃ»§·şÎñÔÚredisÖĞµÄkey
+    #ç”¨æˆ·æœåŠ¡åœ¨redisä¸­çš„key
     key: user_service
   volumes:
-    #Êı¾İ¾íÔÚredisÖĞkey
+    #æ•°æ®å·åœ¨redisä¸­key
     key: sys_volumes
   repository:
     image:
-      #²Ö´¢¾µÏñÔÚredisÖĞkey
+      #ä»“å‚¨é•œåƒåœ¨redisä¸­key
       key: repository_image
   container-name:
-    #ÈİÆ÷ÃûÔÙredisÖĞµÄkey
+    #å®¹å™¨åå†redisä¸­çš„key
     key: container_name
   monitor-actual:
     prefix: monitor_actual
 
   monitor-day:
-    #ÈİÆ÷24Ğ¡Ê±¼à¿ØÔÚredisÖĞkeyÇ°×º
+    #å®¹å™¨24å°æ—¶ç›‘æ§åœ¨redisä¸­keyå‰ç¼€
     prefix: monitor_today
   monitor-week:
-    #ÈİÆ÷7ÈÕ¼à¿ØÔÚredisÖĞkeyÇ°×º
+    #å®¹å™¨7æ—¥ç›‘æ§åœ¨redisä¸­keyå‰ç¼€
     prefix: monitor_week
   standalone:
     host: 127.0.0.1
@@ -130,30 +139,24 @@ redis:
 nginx:
   server: http://8.140.125.78:80
 
-#dockerÅäÖÃ
-# Docker ×¢²áHUBµØÖ·
+#dockeré…ç½®
+# Docker æ³¨å†ŒHUBåœ°å€
 docker:
   registry:
-    url:  8.140.125.78:5000
+    url:  192.168.66.132:5000
   server:
-    address: 8.140.125.78
+    address: 192.168.66.132
     port: 2375
     url: http://${docker.server.address}:${docker.server.port}
   swarm:
     manager:
-      address: 8.140.125.78
-      port: 2375
+      address: 192.168.66.132
+      port: 2377
       url: http://${docker.swarm.manager.address}:${docker.swarm.manager.port}
-#·şÎñÆ÷SocketÍ¨ĞÅ¶Ë¿Ú
+#æœåŠ¡å™¨Socketé€šä¿¡ç«¯å£
 file:
   socket:
     port:8899
-
-
-
-
-
-
 
 
 
