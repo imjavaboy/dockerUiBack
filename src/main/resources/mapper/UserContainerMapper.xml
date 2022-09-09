@@ -5,4 +5,15 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.UserContainerMapper">
 
+    <select id="countByUserId" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            user_container AS c
+        WHERE
+            c.user_id = #{userId}
+        <if test = "status != null" >
+            AND c.STATUS = #{status}
+        </if>
+    </select>
 </mapper>

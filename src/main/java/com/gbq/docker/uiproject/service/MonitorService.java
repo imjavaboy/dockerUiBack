@@ -23,9 +23,9 @@ public interface MonitorService {
 
     /**
      *  获取docker宿主机信息
-     * @param 
+     * @param
      * @since 2022/9/9
-     * @return 
+     * @return
      */
     ResultVO getDockerInfo();
 }

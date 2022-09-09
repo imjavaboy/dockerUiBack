@@ -151,7 +151,7 @@ docker:
   swarm:
     manager:
       address: 192.168.66.132
-      port: 2377
+      port: 2375
       url: http://${docker.swarm.manager.address}:${docker.swarm.manager.port}
 #服务器Socket通信端口
 file:
