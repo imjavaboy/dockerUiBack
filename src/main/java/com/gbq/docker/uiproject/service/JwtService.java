@@ -43,4 +43,12 @@ public interface JwtService {
      * @return
      */
     ResultVO deleteToken(String username);
+
+    /**
+     *  获取所有token
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    ResultVO listToken();
 }

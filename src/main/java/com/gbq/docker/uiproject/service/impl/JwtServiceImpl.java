@@ -12,6 +12,7 @@ import com.gbq.docker.uiproject.domain.vo.UserVO;
 import com.gbq.docker.uiproject.service.JwtService;
 import com.gbq.docker.uiproject.service.SysLoginService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author 郭本琪
@@ -115,6 +117,39 @@ public class JwtServiceImpl implements JwtService {
             return ResultVOUtils.success();
         } catch (Exception e) {
             log.error("token缓存出现错误，错误位置：{}，错误栈：{}", "JwtServiceImpl.deleteToken()", HttpClientUtils.getStackTraceAsString(e));
+            return ResultVOUtils.error(ResultEnum.TOKEN_READ_ERROR);
+        }
+    }
+
+    @Override
+    public ResultVO listToken() {
+        FastDateFormat format = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+        Map<String, Map<String, String>> map = new HashMap<>(16);
+        try {
+            // 取出所有用户
+            Set<String> fields = jedisClient.hkeys(key);
+
+            for(String uid : fields) {
+                String token = jedisClient.hget(key, uid);
+                Map<String, String> tokenMap = new HashMap<>(16);
+                tokenMap.put("token", token);
+
+                ResultVO resultVO = checkToken(token);
+                if(resultVO.getCode() == ResultEnum.OK.getCode()) {
+                    Map data = (Map) resultVO.getData();
+
+                    long timestamp = (long) data.get("timestamp");
+                    tokenMap.put("createDate", format.format(timestamp));
+                } else {
+                    tokenMap.put("createDate", "已过期");
+                }
+
+                map.put(uid, tokenMap);
+            }
+
+            return ResultVOUtils.success(map);
+        } catch (Exception e) {
+            log.error("token缓存出现错误，错误位置：{}，错误栈：{}", "JwtServiceImpl.listToken()", HttpClientUtils.getStackTraceAsString(e));
             return ResultVOUtils.error(ResultEnum.TOKEN_READ_ERROR);
         }
     }
