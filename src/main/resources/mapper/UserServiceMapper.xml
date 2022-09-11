@@ -5,4 +5,12 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.UserServiceMapper">
 
+    <select id="listServiceByUserId" resultType="com.gbq.docker.uiproject.domain.entity.UserService">
+        SELECT * FROM user_service, user_project
+        WHERE
+        user_service.project_id = user_project.id
+        <if test="uid != null" >
+            AND user_service.user_id = #{uid}
+        </if>
+    </select>
 </mapper>

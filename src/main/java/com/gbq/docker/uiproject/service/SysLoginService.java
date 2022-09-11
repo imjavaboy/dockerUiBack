@@ -119,4 +119,12 @@ public interface SysLoginService extends IService<SysLogin> {
      * @return
      */
     int cancelFreezeUser(String[] ids);
+
+    /**
+     *  获取用户权限
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    String getRoleName(String uid);
 }

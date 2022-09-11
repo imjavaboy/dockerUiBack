@@ -16,4 +16,20 @@
             AND c.STATUS = #{status}
         </if>
     </select>
+
+    <select id="listContainerByUserIdAndNameAndStatus"
+            resultType="com.gbq.docker.uiproject.domain.entity.UserContainer">
+
+        SELECT * FROM user_container
+        WHERE 1 = 1
+        <if test="uid != null" >
+            AND user_container.user_id = #{uid}
+        </if>
+        <if test="name != null" >
+            AND user_container.name like "%"#{name}"%"
+        </if>
+        <if test="status != null" >
+            AND user_container.status = #{status}
+        </if>
+    </select>
 </mapper>

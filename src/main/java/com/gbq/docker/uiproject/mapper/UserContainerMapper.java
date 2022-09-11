@@ -2,8 +2,11 @@ package com.gbq.docker.uiproject.mapper;
 
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gbq.docker.uiproject.domain.entity.UserContainer;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author 郭本琪
@@ -20,4 +23,12 @@ public interface UserContainerMapper extends BaseMapper<UserContainer> {
      * @return
      */
     Integer countByUserId(@Param("userId") String userId,  @Param("status") Integer status);
+
+    /**
+     *  获取所有容器
+     * @param
+     * @since 2022/9/9
+     * @return
+     */
+    List<UserContainer> listContainerByUserIdAndNameAndStatus(Page<UserContainer> page, @Param("uid") String uid, @Param("name") String name, @Param("status") Integer status);
 }

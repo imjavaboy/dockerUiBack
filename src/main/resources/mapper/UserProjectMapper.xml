@@ -5,4 +5,45 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.UserProjectMapper">
 
+    <select id="list" resultType="com.gbq.docker.uiproject.domain.dto.UserProjectDTO">
+        SELECT
+            project.*,
+            sys_login.username
+        FROM
+            user_project project,
+            sys_login
+        WHERE
+            project.user_id = sys_login.id
+        <if test="projectSelect.name != null" >
+            AND `project`.name like "%"#{projectSelect.name}"%"
+        </if>
+        <if test="projectSelect.userId != null" >
+            AND `project`.user_id = #{projectSelect.userId}
+        </if>
+        <if test="projectSelect.username != null" >
+            AND `sys_login`.username like "%"#{projectSelect.username}"%"
+        </if>
+        <if test="projectSelect.startDate != null and projectSelect.endDate != null" >
+            AND project.create_date BETWEEN #{projectSelect.startDate} AND #{projectSelect.endDate}
+        </if>
+    </select>
+    <select id="getById" resultType="com.gbq.docker.uiproject.domain.dto.UserProjectDTO">
+        select project.*,sys_login.username
+        from
+           user_project as project,sys_login
+
+        where
+            project.user_id = sys_login.id
+        and
+           project.id = #{id}
+    </select>
+    <select id="hasBelong" resultType="java.lang.Boolean">
+        select count(*)
+        from
+         user_project
+        where
+          user_project.id = #{projectId}
+        and
+          user_project.user_id = #{uid}
+    </select>
 </mapper>

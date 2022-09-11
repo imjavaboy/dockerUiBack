@@ -391,4 +391,11 @@ public class SysLoginServiceImpl extends ServiceImpl<SysLoginMapper,SysLogin> im
 
         return count;
     }
+
+    @Override
+    public String getRoleName(String uid) {
+        SysLogin sysLogin = getById(uid);
+
+        return RoleEnum.getMessage(sysLogin.getRoleId());
+    }
 }

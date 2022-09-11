@@ -5,4 +5,25 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.SysImageMapper">
 
+    <select id="listLocalPublicImage" resultType="com.gbq.docker.uiproject.domain.dto.SysImageDTO">
+        select *
+        from sys_image
+        where type = 1
+        <if test="name != null">
+            and name like "%"#{name}"%"
+        </if>
+    </select>
+    <select id="listLocalUserImage" resultType="com.gbq.docker.uiproject.domain.dto.SysImageDTO">
+        SELECT
+        `s`.*,
+        `l`.username
+        FROM
+        `sys_image` AS `s`,
+        `sys_login` AS `l`
+        WHERE `type` = 2
+        AND `s`.user_id = `l`.id
+        <if test="name != null" >
+            AND `name` like "%"#{name}"%"
+        </if>
+    </select>
 </mapper>
