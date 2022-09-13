@@ -26,4 +26,11 @@
             AND `name` like "%"#{name}"%"
         </if>
     </select>
+    <select id="listSelfImage" resultType="com.gbq.docker.uiproject.domain.entity.SysImage">
+          SELECT *
+          FROM sys_image
+        WHERE user_id = #{uid}
+
+    </select>
+
 </mapper>

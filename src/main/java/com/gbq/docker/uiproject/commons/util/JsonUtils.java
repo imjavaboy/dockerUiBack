@@ -2,11 +2,13 @@ package com.gbq.docker.uiproject.commons.util;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gbq.docker.uiproject.domain.entity.SysLogin;
 import com.gbq.docker.uiproject.exception.JsonException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,4 +70,22 @@ public class JsonUtils {
         }
         return null;
     }
+
+    /**
+     *  Json字符串--> List<对象>
+     * @param 
+     * @since 2022/9/13
+     * @return 
+     */
+    public static <T> List<T> jsonToList(String jsonData, Class<T> beanType) {
+        JavaType javaType = MAPPER.getTypeFactory().constructParametricType(List.class, beanType);
+        try {
+            return MAPPER.readValue(jsonData, javaType);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 }

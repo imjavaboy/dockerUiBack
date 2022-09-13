@@ -46,7 +46,7 @@ public class SysLogServiceImpl  extends ServiceImpl<SysLogMapper, SysLog> implem
         log.setUserAgent(request.getHeader("user-agent"));
 
         if(ex != null) {
-            log.setException(ex.getMessage());
+            log.setException(ex.getMessage().substring(0,255));
         }
 
         sysLogMapper.insert(log);

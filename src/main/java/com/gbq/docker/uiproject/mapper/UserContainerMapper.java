@@ -31,4 +31,15 @@ public interface UserContainerMapper extends BaseMapper<UserContainer> {
      * @return
      */
     List<UserContainer> listContainerByUserIdAndNameAndStatus(Page<UserContainer> page, @Param("uid") String uid, @Param("name") String name, @Param("status") Integer status);
+
+    /**
+     *  查询所有的容器id
+     * @param
+     * @since 2022/9/12
+     * @return
+     */
+    List<String> listAllContainerIds();
+
+    Boolean hasBelongSb(@Param("containerId") String containerId, @Param("userId") String userId);
+
 }

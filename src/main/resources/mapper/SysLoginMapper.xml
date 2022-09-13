@@ -5,4 +5,13 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.SysLoginMapper">
 
+    <select id="listId" resultType="java.lang.String">
+        select id
+        from sys_login
+    </select>
+    <select id="hasExist" resultType="java.lang.Boolean">
+        select count(*)
+        from sys_login
+        where id = #{id}
+    </select>
 </mapper>

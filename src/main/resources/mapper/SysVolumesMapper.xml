@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--接口名称-->
+<mapper namespace="com.gbq.docker.uiproject.mapper.SysVolumesMapper">
+
+    <delete id="deleteByObjId" parameterType="java.lang.String">
+        DELETE FROM `sys_volume` WHERE obj_id = #{objId}
+    </delete>
+    <select id="selectByObjId" resultType="com.gbq.docker.uiproject.domain.entity.SysVolume">
+         SELECT * FROM sys_volume
+        WHERE  obj_id = #{objId}
+    </select>
+</mapper>

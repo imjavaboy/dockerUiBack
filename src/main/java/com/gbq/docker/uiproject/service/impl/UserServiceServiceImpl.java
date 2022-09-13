@@ -73,4 +73,12 @@ public class UserServiceServiceImpl extends ServiceImpl<UserServiceMapper, UserS
         BeanUtils.copyProperties(page, page1);
         return page1.setRecords(dtoConvert.convert(services));
     }
+    @Override
+    public void cleanCache(String id) {
+        try {
+            jedisClient.hdel(key, id);
+        } catch (Exception e) {
+            log.error("缓存清理异常，异常位置：{}", "UserServiceServiceImpl.cleanCache()");
+        }
+    }
 }

@@ -29,4 +29,6 @@ public interface UserServiceService  extends IService<UserService> {
      * @return
      */
     Page<UserServiceDTO> listUserServiceByUserId(String uid, Page<UserService> page);
+
+    void cleanCache(String id);
 }

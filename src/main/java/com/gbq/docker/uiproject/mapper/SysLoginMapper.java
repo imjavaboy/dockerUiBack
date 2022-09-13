@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gbq.docker.uiproject.domain.entity.SysLogin;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 /**
  * @author 郭本琪
@@ -14,4 +16,20 @@ import org.springframework.stereotype.Component;
  */
 
 public interface SysLoginMapper extends BaseMapper<SysLogin> {
+
+    /**
+     *  获取所有登录用户id
+     * @param
+     * @since 2022/9/11
+     * @return
+     */
+    List<String> listId();
+
+    /**
+     *  判断id是否还存在
+     * @param
+     * @since 2022/9/11
+     * @return
+     */
+    boolean hasExist(String id);
 }

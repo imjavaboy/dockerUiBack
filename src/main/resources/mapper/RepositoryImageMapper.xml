@@ -5,4 +5,17 @@
 <!--接口名称-->
 <mapper namespace="com.gbq.docker.uiproject.mapper.RepositoryImageMapper">
 
+    <select id="listHubImageVO" resultType="com.gbq.docker.uiproject.domain.vo.HubImageVO">
+
+        SELECT
+            repository_image.NAME AS NAME,
+            sys_login.username username,
+            repository_image.repo repo
+        FROM
+            repository_image,
+            sys_login
+        WHERE
+            repository_image.user_id = sys_login.id
+
+    </select>
 </mapper>

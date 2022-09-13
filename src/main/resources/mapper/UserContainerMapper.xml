@@ -32,4 +32,17 @@
             AND user_container.status = #{status}
         </if>
     </select>
+    <select id="listAllContainerIds" resultType="java.lang.String">
+        select id
+        from user_container
+    </select>
+    <select id="hasBelongSb" resultType="java.lang.Boolean">
+         SELECT
+            count( * )
+        FROM
+            `user_container` AS `c`
+        WHERE
+            c.id = #{containerId}
+            AND c.user_id = #{userId}
+    </select>
 </mapper>

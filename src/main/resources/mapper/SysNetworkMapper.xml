@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--接口名称-->
+<mapper namespace="com.gbq.docker.uiproject.mapper.SysNetworkMapper">
+
+    <select id="listAllNetwork" resultType="com.gbq.docker.uiproject.domain.entity.SysNetwork">
+        SELECT *
+        FROM sys_network
+        <if test="hasPublic != null" >
+            WHERE `has_public` = #{hasPublic}
+        </if>
+    </select>
+    <select id="listSelfAndPublicNetwork" resultType="com.gbq.docker.uiproject.domain.entity.SysNetwork">
+
+         SELECT
+        *
+        FROM sys_network
+        WHERE `user_id` = #{uid}
+    </select>
+    <select id="listSelfNetwork" resultType="com.gbq.docker.uiproject.domain.entity.SysNetwork">
+        SELECT * FROM sys_network
+        WHERE (has_public = true)
+        OR (has_public = false and user_id = #{uid})
+
+    </select>
+</mapper>

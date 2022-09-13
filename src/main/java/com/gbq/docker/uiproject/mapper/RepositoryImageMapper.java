@@ -3,6 +3,9 @@ package com.gbq.docker.uiproject.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gbq.docker.uiproject.domain.entity.RepositoryImage;
+import com.gbq.docker.uiproject.domain.vo.HubImageVO;
+
+import java.util.List;
 
 /**
  * @author 郭本琪
@@ -12,4 +15,6 @@ import com.gbq.docker.uiproject.domain.entity.RepositoryImage;
  */
 
 public interface RepositoryImageMapper extends BaseMapper<RepositoryImage> {
+
+    List<HubImageVO> listHubImageVO();
 }

@@ -3,18 +3,23 @@ package com.gbq.docker.uiproject.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gbq.docker.uiproject.commons.util.ResultVOUtils;
+import com.gbq.docker.uiproject.commons.util.StringUtils;
 import com.gbq.docker.uiproject.domain.dto.SysImageDTO;
+import com.gbq.docker.uiproject.domain.entity.SysImage;
 import com.gbq.docker.uiproject.domain.enums.ImageTypeEnum;
 import com.gbq.docker.uiproject.domain.enums.ResultEnum;
 import com.gbq.docker.uiproject.domain.enums.RoleEnum;
 import com.gbq.docker.uiproject.domain.vo.ResultVO;
+import com.gbq.docker.uiproject.service.RepositoryImageService;
 import com.gbq.docker.uiproject.service.SysImageService;
 import com.gbq.docker.uiproject.service.SysLoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author 郭本琪
@@ -31,6 +36,8 @@ public class ImageController {
     private SysLoginService loginService;
     @Resource
     private SysImageService imageService;
+    @Resource
+    private RepositoryImageService repositoryImageService;
 
     @ApiOperation("查找本地镜像")
     @GetMapping("/list/local")
@@ -65,5 +72,64 @@ public class ImageController {
     public ResultVO searchHubImage(String name, @RequestParam(required = false, defaultValue = "10") int limit) {
         return imageService.listHubImage(name, limit);
     }
+
+    @ApiOperation("查询自己长传的镜像")
+    @GetMapping("/self")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')")
+    public ResultVO selfImage(@RequestAttribute String uid,  Page<SysImage> page) {
+        return ResultVOUtils.success(imageService.selfImage(uid, page));
+    }
+
+    @ApiOperation("查看镜像所暴露的端口")
+    @GetMapping("/{id}/exportPort")
+    public ResultVO listExportPort(@RequestAttribute String uid,@PathVariable String id){
+        return imageService.listExportPort(id,uid);
+    }
+
+  @ApiOperation("从dockhub拉取镜像到本地，并发送WebSocket")
+    @PostMapping("/pull")
+    public ResultVO pullImage(@RequestAttribute String uid, String imageName, HttpServletRequest request) {
+        //检查,并同步数据库和本地镜像的一致性
+        ResultVO resultVO = imageService.pullImageCheck(imageName, uid);
+        if(ResultEnum.OK.getCode() != resultVO.getCode()) {
+            return resultVO;
+        }
+
+        imageService.pullImageTask(imageName, uid, request);
+        return ResultVOUtils.success("开始拉取镜像");
+    }
+
+
+    @GetMapping("/sync")
+    @ApiOperation("同步数据库镜像和docker上的镜像")
+    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+    public ResultVO syncLocalImage() {
+        return imageService.sync();
+    }
+
+    @ApiOperation("获取镜像详情")
+    @GetMapping("/inspect/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')")
+    public ResultVO imageInspect(@RequestAttribute("uid") String uid, @PathVariable String id) {
+        return imageService.inspectImage(id, uid);
+    }
+    @ApiOperation("查看镜像历史")
+    @GetMapping("/history/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')")
+    public ResultVO lookImage(@RequestAttribute String uid, @PathVariable String id) {
+        return imageService.getHistory(id, uid);
+    }
+
+    @ApiOperation("导出镜像，返回连接")
+    @GetMapping("/export/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')")
+    public ResultVO exportImage(@RequestAttribute String uid, @PathVariable String id) {
+        if(StringUtils.isBlank(id)) {
+            return ResultVOUtils.error(ResultEnum.PARAM_ERROR);
+        }
+        return imageService.exportImage(id, uid);
+    }
+
+
 
 }

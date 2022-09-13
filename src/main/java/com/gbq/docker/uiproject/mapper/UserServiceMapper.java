@@ -22,4 +22,12 @@ public interface UserServiceMapper extends BaseMapper<UserService> {
      * @return
      */
     List<UserService> listServiceByUserId(Page<UserService> page,@Param("uid") String uid);
+
+    /**
+     *  服务是否属于某一用户
+     * @param
+     * @since 2022/9/13
+     * @return
+     */
+    boolean hasBelong(String objId, String uid);
 }

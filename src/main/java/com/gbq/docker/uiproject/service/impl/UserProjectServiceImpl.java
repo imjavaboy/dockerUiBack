@@ -1,6 +1,7 @@
 package com.gbq.docker.uiproject.service.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gbq.docker.uiproject.commons.util.HttpClientUtils;
@@ -78,38 +79,43 @@ public class UserProjectServiceImpl extends ServiceImpl<UserProjectMapper, UserP
     @Override
     public ResultVO getProjectById(String id, String uid) {
 
-        String res = jedisClient.hget(key, id);
-        try {
-            if (StringUtils.isNotBlank(res)) {
-                UserProjectDTO userProjectDTO = JsonUtils.jsonToObject(res, UserProjectDTO.class);
-                if (userProjectDTO != null){
-                    return ResultVOUtils.success(userProjectDTO);
-                }else{
-//TODO                    cleanCache(id);
+        if (StringUtils.isNotBlank(id)){
+            String res = jedisClient.hget(key, id);
+            try {
+                if (StringUtils.isNotBlank(res)) {
+                    UserProjectDTO userProjectDTO = JsonUtils.jsonToObject(res, UserProjectDTO.class);
+                    if (userProjectDTO != null){
+                        return ResultVOUtils.success(userProjectDTO);
+                    }else{
+                        cleanCache(id);
+                    }
+                }
+            } catch (JsonException e) {
+                log.error("缓存读取异常，错误位置：UserProjectServiceImpl.getProjectById()");
+            }
+            UserProjectDTO projectDTO = projectMapper.getById(id);
+
+            if(projectDTO == null) {
+                return ResultVOUtils.error(ResultEnum.PARAM_ERROR);
+            }
+            //存缓存
+            try {
+                jedisClient.hset(key, id, JsonUtils.objectToJson(projectDTO));
+            } catch (Exception e) {
+                log.error("缓存存储异常，错误位置：UserProjectServiceImpl.getProjectById()");
+            }
+
+            String roleName =  loginService.getRoleName(uid);
+            if (RoleEnum.ROLE_USER.getMessage().equals(roleName)) {
+                if (!uid.equals(projectDTO.getUserId())) {
+                    return ResultVOUtils.error(ResultEnum.PERMISSION_ERROR);
                 }
             }
-        } catch (JsonException e) {
-            log.error("缓存读取异常，错误位置：UserProjectServiceImpl.getProjectById()");
-        }
-        UserProjectDTO projectDTO = projectMapper.getById(id);
-
-        if(projectDTO == null) {
-            return ResultVOUtils.error(ResultEnum.PARAM_ERROR);
-        }
-        //存缓存
-        try {
-            jedisClient.hset(key, id, JsonUtils.objectToJson(projectDTO));
-        } catch (Exception e) {
-            log.error("缓存存储异常，错误位置：UserProjectServiceImpl.getProjectById()");
+            return ResultVOUtils.success(projectDTO);
+        }else {
+            return null;
         }
 
-        String roleName =  loginService.getRoleName(uid);
-        if (RoleEnum.ROLE_USER.getMessage().equals(roleName)) {
-            if (!uid.equals(projectDTO.getUserId())) {
-                return ResultVOUtils.error(ResultEnum.PERMISSION_ERROR);
-            }
-        }
-        return ResultVOUtils.success(projectDTO);
     }
 
     @Override
@@ -218,7 +224,7 @@ public class UserProjectServiceImpl extends ServiceImpl<UserProjectMapper, UserP
 
         projectMapper.updateById(project);
         // 清理缓存
-//TODO        cleanCache(id);
+        cleanCache(id);
 
         return ResultVOUtils.success();
     }
@@ -256,5 +262,28 @@ public class UserProjectServiceImpl extends ServiceImpl<UserProjectMapper, UserP
     @Override
     public boolean hasBelong(String projectId, String uid) {
         return projectMapper.hasBelong(projectId,uid);
+    }
+//    @Override
+    public void cleanCache(String id) {
+        try {
+            // 清理项目缓存
+            jedisClient.hdel(key, id);
+
+            // 更新所属容器
+            List<UserContainer> containers = containerService.selectList(new EntityWrapper<UserContainer>().eq("project_id",id));
+            for(UserContainer container : containers) {
+                container.setProjectId(null);
+                containerService.updateById(container);
+            }
+            // 更新所属服务
+            List<UserService> services = userServiceService.selectList(new EntityWrapper<UserService>().eq("project_id",id));
+            for(UserService service : services) {
+                service.setProjectId(null);
+                userServiceService.updateById(service);
+                userServiceService.cleanCache(service.getId());
+            }
+        } catch (Exception e) {
+            log.error("缓存删除异常，错误位置：UserProjectServiceImpl.cleanCache()");
+        }
     }
 }

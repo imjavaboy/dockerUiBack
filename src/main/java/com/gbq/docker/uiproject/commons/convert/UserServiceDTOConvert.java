@@ -1,6 +1,7 @@
 package com.gbq.docker.uiproject.commons.convert;
 
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gbq.docker.uiproject.commons.util.StringUtils;
 import com.gbq.docker.uiproject.domain.dto.UserServiceDTO;
 import com.gbq.docker.uiproject.domain.entity.UserService;
@@ -50,5 +51,15 @@ public class UserServiceDTOConvert {
 
     public List<UserServiceDTO> convert(List<UserService> userServices) {
         return userServices.stream().map(this::convert).collect(Collectors.toList());
+    }
+    public Page<UserServiceDTO> convert(Page<UserService> page) {
+        List<UserService> userServices = page.getRecords();
+        List<UserServiceDTO> userServiceDTOS = convert(userServices);
+
+        Page<UserServiceDTO> page1 = new Page<>();
+        BeanUtils.copyProperties(page, page1);
+        page1.setRecords(userServiceDTOS);
+
+        return page1;
     }
 }
